@@ -1,6 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { chromium } from 'playwright';
+import 'dotenv/config';
+import { env } from './env';
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -44,4 +46,8 @@ app.on('activate', () => {
   const page = await browser.newPage();
   //TODO: Xを開いてログインするようにする
   await page.goto('https://www.google.com');
+
+  //TODO: パスワードなどを使ってログインするようにする
+  console.log(env.X_EMAIL)
+
 })()
