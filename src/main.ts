@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import { chromium } from 'playwright';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -51,3 +52,10 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+(async()=>{
+  const browser = await chromium.launch({ headless: false });
+  const page = await browser.newPage();
+  //TODO: Xを開いてログインするようにする
+  await page.goto('https://www.google.com');
+})()
