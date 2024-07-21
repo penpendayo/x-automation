@@ -4,6 +4,8 @@ import { chromium } from 'playwright';
 import 'dotenv/config';
 import { env } from './env';
 
+const interval = 2000;
+
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
@@ -41,13 +43,21 @@ app.on('activate', () => {
 });
 
 
-(async()=>{
+(async () => {
   const browser = await chromium.launch({ headless: false });
   const page = await browser.newPage();
-  //TODO: Xを開いてログインするようにする
-  await page.goto('https://www.google.com');
+  await page.goto('https://x.com/login');
 
-  //TODO: パスワードなどを使ってログインするようにする
-  console.log(env.X_EMAIL)
+  await page.locator('input[name="text"]').fill(env.X_EMAIL);
+  await page.waitForTimeout(interval);
+  await page.getByRole("button", { name: "次へ" }).click();
+
+  await page.locator('input[name="text"]').fill(env.X_TEL);
+  await page.waitForTimeout(interval);
+  await page.getByRole("button", { name: "次へ" }).click();
+
+  await page.locator('input[name="password"]').fill(env.X_PASSWORD);
+  await page.waitForTimeout(interval);
+  await page.getByRole("button", { name: "ログイン" }).click();
 
 })()
