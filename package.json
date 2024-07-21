@@ -9,9 +9,10 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint ."
   },
   "devDependencies": {
+    "@agaroot/eslint-config-common": "^2.1.12",
     "@electron-forge/cli": "^7.4.0",
     "@electron-forge/maker-deb": "^7.4.0",
     "@electron-forge/maker-rpm": "^7.4.0",
@@ -22,12 +23,14 @@
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron-forge/shared-types": "^7.4.0",
     "@electron/fuses": "^1.8.0",
+    "@tsconfig/node-lts": "^20.1.3",
+    "@tsconfig/strictest": "^2.0.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "electron": "31.2.1",
-    "eslint": "^9.7.0",
+    "eslint": "8.57.0",
     "eslint-plugin-import": "^2.29.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.5.3",

@@ -1,13 +1,15 @@
 import { builtinModules } from 'node:module';
+
+import package_ from './package.json';
+
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig } from 'vite';
-import pkg from './package.json';
 
-export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];
+export const builtins = ['electron', ...builtinModules.flatMap((m) => [m, `node:${m}`])];
 
-export const external = [...builtins, ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {})];
+export const external = [...builtins, ...Object.keys('dependencies' in package_ ? (package_.dependencies as Record<string, unknown>) : {})];
 
-export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
+export const getBuildConfig = (env: ConfigEnv<'build'>): UserConfig => {
   const { root, mode, command } = env;
 
   return {
@@ -23,39 +25,43 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
     },
     clearScreen: false,
   };
-}
+};
 
-export function getDefineKeys(names: string[]) {
+export const getDefineKeys = (names: string[]) => {
   const define: { [name: string]: VitePluginRuntimeKeys } = {};
 
-  return names.reduce((acc, name) => {
+  return names.reduce((accumulator, name) => {
     const NAME = name.toUpperCase();
     const keys: VitePluginRuntimeKeys = {
       VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
       VITE_NAME: `${NAME}_VITE_NAME`,
     };
 
-    return { ...acc, [name]: keys };
+    return { ...accumulator, [name]: keys };
   }, define);
-}
+};
 
-export function getBuildDefine(env: ConfigEnv<'build'>) {
+export const getBuildDefine = (env: ConfigEnv<'build'>) => {
   const { command, forgeConfig } = env;
+  //@ts-expect-error aaa
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   const names = forgeConfig.renderer.filter(({ name }) => name != null).map(({ name }) => name!);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const defineKeys = getDefineKeys(names);
-  const define = Object.entries(defineKeys).reduce((acc, [name, keys]) => {
+  const define = Object.entries(defineKeys).reduce((accumulator, [name, keys]) => {
     const { VITE_DEV_SERVER_URL, VITE_NAME } = keys;
+    // eslint-disable-next-line unicorn/prevent-abbreviations
     const def = {
       [VITE_DEV_SERVER_URL]: command === 'serve' ? JSON.stringify(process.env[VITE_DEV_SERVER_URL]) : undefined,
       [VITE_NAME]: JSON.stringify(name),
     };
-    return { ...acc, ...def };
-  }, {} as Record<string, any>);
+    return { ...accumulator, ...def };
+  }, {} as Record<string, unknown>);
 
   return define;
-}
+};
 
-export function pluginExposeRenderer(name: string): Plugin {
+export const pluginExposeRenderer = (name: string): Plugin => {
   const { VITE_DEV_SERVER_URL } = getDefineKeys([name])[name];
 
   return {
@@ -66,15 +72,15 @@ export function pluginExposeRenderer(name: string): Plugin {
       process.viteDevServers[name] = server;
 
       server.httpServer?.once('listening', () => {
-        const addressInfo = server.httpServer!.address() as AddressInfo;
+        const addressInfo = server.httpServer.address() as AddressInfo;
         // Expose env constant for main process use.
         process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo?.port}`;
       });
     },
   };
-}
+};
 
-export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
+export const pluginHotRestart = (command: 'reload' | 'restart'): Plugin =>{
   return {
     name: '@electron-forge/plugin-vite:hot-restart',
     closeBundle() {
@@ -90,4 +96,4 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
       }
     },
   };
-}
+};

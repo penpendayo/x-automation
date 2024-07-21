@@ -1,6 +1,8 @@
-import type { ConfigEnv, UserConfig } from 'vite';
 import { defineConfig, mergeConfig } from 'vite';
-import { getBuildConfig, getBuildDefine, external, pluginHotRestart } from './vite.base.config';
+
+import { getBuildConfig, external, pluginHotRestart, getBuildDefine } from './vite.base.config';
+
+import type { ConfigEnv, UserConfig } from 'vite';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -10,6 +12,7 @@ export default defineConfig((env) => {
   const config: UserConfig = {
     build: {
       lib: {
+        //@ts-expect-error entry: 'src/main.tsのはずなのにneverとなる
         entry: forgeConfigSelf.entry!,
         fileName: () => '[name].js',
         formats: ['cjs'],

@@ -1,6 +1,8 @@
-import type { ConfigEnv, UserConfig } from 'vite';
 import { defineConfig, mergeConfig } from 'vite';
+
 import { getBuildConfig, external, pluginHotRestart } from './vite.base.config';
+
+import type { ConfigEnv, UserConfig } from 'vite';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -11,6 +13,7 @@ export default defineConfig((env) => {
       rollupOptions: {
         external,
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
+        //@ts-expect-error neverになるので無視してる
         input: forgeConfigSelf.entry!,
         output: {
           format: 'cjs',
